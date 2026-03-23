@@ -290,12 +290,12 @@ footer p span{color:var(--red)}
         <!-- FLAPPY -->
         <!-- Touch controls for Tetris -->
       <div class="touch-controls" id="tetris-touch">
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.left()" onclick="if(aboutTetris)aboutTetris.left()">◀</button>
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.rot()" onclick="if(aboutTetris)aboutTetris.rot()">↻</button>
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.right()" onclick="if(aboutTetris)aboutTetris.right()">▶</button>
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.soft()" onclick="if(aboutTetris)aboutTetris.soft()">▼</button>
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.hard()" onclick="if(aboutTetris)aboutTetris.hard()">⏬</button>
-        <button class="tc-btn" ontouchstart="if(aboutTetris)aboutTetris.togglePause()" onclick="if(aboutTetris)aboutTetris.togglePause()">⏸</button>
+        <button class="tc-btn" onclick="tcAction(t=>t.left())">◀</button>
+        <button class="tc-btn" onclick="tcAction(t=>t.rot())">ROT</button>
+        <button class="tc-btn" onclick="tcAction(t=>t.right())">▶</button>
+        <button class="tc-btn" onclick="tcAction(t=>t.soft())">▼</button>
+        <button class="tc-btn" onclick="tcAction(t=>t.hard())">DROP</button>
+        <button class="tc-btn" onclick="resumeAC();if(aboutTetris)aboutTetris.togglePause()">⏸</button>
       </div>
 
       <div class="flappy-touch" id="flappy-touch" style="display:none">
@@ -812,6 +812,15 @@ class Flappy{
 // ABOUT — GAME INSTANCES
 // ============================================================
 let aboutTetris=null,aboutFlappy=null,activeGame='tetris';
+
+function tcAction(fn){
+  resumeAC();
+  if(!aboutTetris){initAboutTetris();}
+  if(aboutTetris && aboutTetris.running){
+    fn(aboutTetris);
+    aboutTetris.draw();
+  }
+}
 
 function initAboutTetris(){
   if(aboutTetris)return;
