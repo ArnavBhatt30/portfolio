@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arnav Bhatt — Cloud & DevOps Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--grid:#111118;--cyan:#00f0f0;--yellow:#f0f000;--purple:#a000f0;--green:#00f000;--red:#f00000;--blue:#0000f0;--orange:#f0a000;--white:#f0f0f0;--dim:#333;--text:#e0e0e0;--fp:'Press Start 2P',monospace;--fv:'VT323',monospace;--fm:'Share Tech Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fm);overflow-x:hidden;cursor:crosshair}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:200}
+#tetris-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.12}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;background:rgba(10,10,15,.93);border-bottom:2px solid var(--cyan);backdrop-filter:blur(8px)}
+.nav-logo{font-family:var(--fp);font-size:.58rem;color:var(--cyan);text-shadow:0 0 10px var(--cyan);letter-spacing:2px}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{font-family:var(--fp);font-size:.4rem;color:var(--text);text-decoration:none;letter-spacing:1px;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--cyan);transform:scaleX(0);transition:transform .2s}
+.nav-links a:hover{color:var(--cyan)}.nav-links a:hover::after{transform:scaleX(1)}
+.score-display{font-family:var(--fp);font-size:.4rem;color:var(--yellow);text-shadow:0 0 8px var(--yellow);cursor:pointer;user-select:none}
+
+/* SECTIONS */
+section{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 2rem 4rem}
+.container{max-width:1100px;width:100%;margin:0 auto}
+.section-header{display:flex;align-items:center;gap:1rem;margin-bottom:3rem}
+.section-tag{font-family:var(--fp);font-size:.48rem;color:var(--bg);background:var(--cyan);padding:4px 8px;letter-spacing:1px}
+.section-title{font-family:var(--fp);font-size:.88rem;color:var(--white);text-shadow:3px 3px 0 var(--cyan);letter-spacing:2px}
+
+/* HERO */
+#hero{flex-direction:column;text-align:center;gap:1.5rem}
+.hero-pre{font-family:var(--fp);font-size:.52rem;color:var(--green);letter-spacing:3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero-title{font-family:var(--fp);font-size:clamp(1rem,4vw,2.4rem);line-height:1.6;background:linear-gradient(135deg,var(--cyan),var(--purple),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,240,240,.4))}
+.hero-sub{font-family:var(--fv);font-size:1.8rem;color:var(--text);letter-spacing:2px}
+.hero-sub span{color:var(--yellow);border-right:3px solid var(--yellow);animation:blink .8s steps(1) infinite}
+.hero-badges{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.hero-badge{font-family:var(--fp);font-size:.36rem;padding:6px 12px;letter-spacing:1px;border:2px solid;animation:float 3s ease-in-out infinite}
+.hero-badge:nth-child(2){animation-delay:.4s}.hero-badge:nth-child(3){animation-delay:.8s}
+.hb-c{color:var(--cyan);border-color:var(--cyan)}.hb-p{color:var(--purple);border-color:var(--purple)}.hb-y{color:var(--yellow);border-color:var(--yellow)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-cta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+.btn{font-family:var(--fp);font-size:.46rem;padding:12px 22px;cursor:pointer;text-decoration:none;letter-spacing:1px;transition:all .15s;border:none;display:inline-block}
+.btn-primary{background:var(--cyan);color:var(--bg);box-shadow:4px 4px 0 var(--blue)}
+.btn-primary:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--blue)}
+.btn-secondary{background:transparent;color:var(--cyan);border:2px solid var(--cyan);box-shadow:4px 4px 0 rgba(0,240,240,.3)}
+.btn-secondary:hover{background:var(--cyan);color:var(--bg);transform:translate(-2px,-2px)}
+.hero-pieces{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap}
+.mp{display:grid;gap:3px;animation:float 3s ease-in-out infinite}
+.mp:nth-child(2){animation-delay:.5s}.mp:nth-child(3){animation-delay:1s}.mp:nth-child(4){animation-delay:1.5s}.mp:nth-child(5){animation-delay:2s}
+.cell{width:13px;height:13px;border:2px solid rgba(255,255,255,.22)}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:auto 1fr;gap:3rem;align-items:start}
+.about-game-wrap{display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.about-game-ui{display:flex;gap:.8rem;align-items:flex-start}
+.aside{font-family:var(--fp);font-size:.33rem;color:var(--text);letter-spacing:1px;line-height:2.8;min-width:80px}
+.aside .val{color:var(--yellow);font-size:.46rem}
+.aside .ml{color:var(--cyan);font-size:.32rem;margin-bottom:2px}
+.abl{font-family:var(--fp);font-size:.34rem;color:var(--cyan);letter-spacing:1px;text-align:center}
+.game-btns{display:flex;gap:.6rem;justify-content:center;margin-top:.3rem}
+.game-btn{font-family:var(--fp);font-size:.3rem;padding:5px 10px;cursor:pointer;letter-spacing:1px;border:2px solid var(--dim);background:transparent;color:var(--dim);transition:all .2s}
+.game-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.game-btn.active{border-color:var(--yellow);color:var(--yellow)}
+.about-text p{font-family:var(--fv);font-size:1.28rem;line-height:1.8;color:var(--text);margin-bottom:1rem}
+.hl{color:var(--yellow);font-size:1.38rem}
+.stat-row{display:flex;gap:1.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.stat-box{border:2px solid var(--purple);padding:12px 18px;text-align:center;box-shadow:3px 3px 0 var(--purple);transition:transform .2s}
+.stat-box:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--purple)}
+.stat-num{font-family:var(--fp);font-size:.95rem;color:var(--purple);display:block}
+.stat-label{font-family:var(--fp);font-size:.28rem;color:var(--text);letter-spacing:1px;margin-top:4px;display:block}
+
+/* SKILLS */
+.skills-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1.5rem}
+.skill-panel{border:2px solid var(--dim);padding:1.4rem;transition:border-color .2s,transform .2s}
+.skill-panel:hover{transform:translateY(-4px)}
+.sp-c{border-color:var(--cyan)}.sp-p{border-color:var(--purple)}.sp-y{border-color:var(--yellow)}.sp-g{border-color:var(--green)}
+.spt{font-family:var(--fp);font-size:.48rem;margin-bottom:1.1rem;letter-spacing:1px}
+.sp-c .spt{color:var(--cyan)}.sp-p .spt{color:var(--purple)}.sp-y .spt{color:var(--yellow)}.sp-g .spt{color:var(--green)}
+.ski{margin-bottom:.75rem}
+.snr{display:flex;justify-content:space-between;margin-bottom:4px}
+.sn{font-family:var(--fv);font-size:1.12rem;color:var(--text)}
+.sp{font-family:var(--fp);font-size:.34rem;color:var(--dim)}
+.sb{height:10px;background:var(--grid);border:1px solid var(--dim);overflow:hidden}
+.sf{height:100%;width:0;transition:width 1.2s cubic-bezier(.25,1,.5,1);position:relative;overflow:hidden}
+.sf::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(0,0,0,.25) 8px,rgba(0,0,0,.25) 10px)}
+.sp-c .sf{background:var(--cyan)}.sp-p .sf{background:var(--purple)}.sp-y .sf{background:var(--yellow)}.sp-g .sf{background:var(--green)}
+
+/* PROJECTS */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.8rem}
+.project-card{border:2px solid var(--dim);overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s;cursor:pointer}
+.project-card:hover{transform:translate(-4px,-4px);border-color:var(--cyan);box-shadow:4px 4px 0 var(--cyan)}
+.pch{padding:.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--dim)}
+.pct{font-family:var(--fp);font-size:.47rem;color:var(--white);letter-spacing:1px}
+.pcst{font-family:var(--fp);font-size:.28rem;color:var(--dim);margin-top:4px}
+.pcb{padding:1.1rem}
+.pdesc{font-family:var(--fv);font-size:1.18rem;color:var(--text);line-height:1.7;margin-bottom:.9rem}
+.ptags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.tag{font-family:var(--fp);font-size:.29rem;padding:3px 7px;letter-spacing:1px}
+.tc{color:var(--cyan);border:1px solid var(--cyan)}.ty{color:var(--yellow);border:1px solid var(--yellow)}.tp{color:var(--purple);border:1px solid var(--purple)}.tg{color:var(--green);border:1px solid var(--green)}.to{color:var(--orange);border:1px solid var(--orange)}.tr{color:var(--red);border:1px solid var(--red)}
+.plinks{display:flex;gap:1rem}
+.pl{font-family:var(--fp);font-size:.34rem;color:var(--cyan);text-decoration:none;transition:color .2s}
+.pl:hover{color:var(--yellow)}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-family:var(--fp);font-size:.34rem;color:var(--cyan);letter-spacing:1px}
+.fg input,.fg textarea{background:var(--grid);border:2px solid var(--dim);color:var(--text);font-family:var(--fm);font-size:.88rem;padding:10px 13px;outline:none;transition:border-color .2s;resize:none}
+.fg input:focus,.fg textarea:focus{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,240,240,.14)}
+.fg textarea{min-height:120px}
+.cit{font-family:var(--fv);font-size:1.28rem;color:var(--text);line-height:1.8}
+.cl{display:flex;flex-direction:column;gap:.9rem;margin-top:1.4rem}
+.cli{display:flex;align-items:center;gap:1rem;padding:11px 15px;border:2px solid var(--dim);text-decoration:none;color:var(--text);font-family:var(--fv);font-size:1.18rem;transition:all .2s}
+.cli:hover{border-color:var(--cyan);color:var(--cyan);transform:translateX(4px)}
+.clii{width:32px;text-align:center;font-family:var(--fp);font-size:.46rem}
+
+footer{position:relative;z-index:1;border-top:2px solid var(--dim);padding:1.8rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+footer p{font-family:var(--fp);font-size:.34rem;color:var(--dim);letter-spacing:1px}
+footer p span{color:var(--red)}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;z-index:999;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.4rem}
+.overlay.active{display:flex}
+.ov-close{position:absolute;top:1.4rem;right:2rem;font-family:var(--fp);font-size:.44rem;color:var(--red);cursor:pointer;background:none;border:2px solid var(--red);padding:5px 11px;transition:all .2s}
+.ov-close:hover{background:var(--red);color:var(--bg)}
+.ov-title{font-family:var(--fp);font-size:.48rem;color:var(--yellow);letter-spacing:2px;text-shadow:0 0 10px var(--yellow)}
+.k-ui{display:flex;gap:1.8rem;align-items:flex-start}
+.k-side{font-family:var(--fp);font-size:.38rem;color:var(--text);letter-spacing:1px;line-height:2.8}
+.k-side .val{color:var(--yellow)}
+.k-side .hints{font-size:.26rem;color:var(--dim);line-height:2.6;margin-top:.8rem}
+.ov-reset-btn{font-family:var(--fp);font-size:.34rem;padding:7px 16px;cursor:pointer;border:2px solid var(--green);background:transparent;color:var(--green);letter-spacing:1px;transition:all .2s}
+.ov-reset-btn:hover{background:var(--green);color:var(--bg)}
+
+/* FLAPPY */
+#flappy-canvas{border:3px solid var(--green);box-shadow:0 0 30px rgba(0,240,0,.3),4px 4px 0 var(--dim);display:block}
+
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);font-family:var(--fp);font-size:.38rem;color:var(--bg);background:var(--yellow);padding:9px 18px;z-index:600;transition:transform .4s;letter-spacing:1px;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+.cursor-block{position:fixed;width:9px;height:9px;pointer-events:none;z-index:150;opacity:0;animation:cf .6s ease-out forwards}
+@keyframes cf{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(.3)}}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}
+.fade-in.visible{opacity:1;transform:none}
+
+@media(max-width:768px){.about-grid{grid-template-columns:1fr}.about-game-ui{justify-content:center}.contact-grid{grid-template-columns:1fr}.nav-links{gap:1rem}.hero-title{font-size:1rem}}
+
+.pct{cursor:pointer;}
+.pct:hover{color:var(--cyan);text-decoration:underline;}
+
+/* ===== MOBILE ONLY (NO DESKTOP CHANGE) ===== */
+@media(max-width:768px){
+
+  nav{ padding:.6rem 1rem; }
+  .nav-links{ display:none; }
+
+  .hero-title{ font-size:1.2rem !important; }
+  .hero-sub{ font-size:1.2rem !important; }
+
+  section{ padding:3rem 1rem !important; min-height:auto; }
+
+  .about-grid{ grid-template-columns:1fr; gap:1.5rem; }
+  .about-text p{ font-size:1rem; }
+
+  #about-canvas, #flappy-canvas{
+    width:140px !important;
+    height:280px !important;
+  }
+
+  .skills-board{ grid-template-columns:1fr; }
+  .sn{ font-size:1rem; }
+
+  .projects-grid{ grid-template-columns:1fr; }
+  .pct{ font-size:.55rem !important; }
+  .pdesc{ font-size:1rem; }
+
+  .contact-grid{ grid-template-columns:1fr; gap:1.5rem; }
+
+  .btn{ font-size:.35rem; padding:10px 14px; }
+
+  .about-game-ui{
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .aside{ display:none; }
+}
+
+</style>
+
+</head>
+<body>
+
+<canvas id="tetris-bg"></canvas>
+
+<nav>
+  <div class="nav-logo">&lt;ARNAV /&gt;</div>
+  <ul class="nav-links">
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#skills">SKILLS</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+  <div class="score-display" id="score-display">SCORE: <span id="score">000000</span></div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-pre">▶ PLAYER 1 — READY</div>
+  <h1 class="hero-title">ARNAV BHATT</h1>
+  <p class="hero-sub">I <span id="typed"></span>&nbsp;</p>
+  <div class="hero-badges">
+    <span class="hero-badge hb-c">☁ CLOUD ENGINEER</span>
+    <span class="hero-badge hb-p">⚙ DEVOPS</span>
+    <span class="hero-badge hb-y">✦ AI / ML</span>
+  </div>
+  <div class="hero-pieces">
+    <div class="mp" style="grid-template-columns:repeat(4,1fr)">
+      <div class="cell" style="background:var(--cyan)"></div><div class="cell" style="background:var(--cyan)"></div><div class="cell" style="background:var(--cyan)"></div><div class="cell" style="background:var(--cyan)"></div>
+    </div>
+    <div class="mp" style="grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)">
+      <div class="cell" style="background:var(--yellow)"></div><div class="cell" style="background:var(--yellow)"></div><div class="cell" style="background:var(--yellow)"></div><div class="cell" style="background:var(--yellow)"></div>
+    </div>
+    <div class="mp" style="grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)">
+      <div class="cell" style="background:transparent;border-color:transparent"></div><div class="cell" style="background:var(--purple)"></div><div class="cell" style="background:transparent;border-color:transparent"></div>
+      <div class="cell" style="background:var(--purple)"></div><div class="cell" style="background:var(--purple)"></div><div class="cell" style="background:var(--purple)"></div>
+    </div>
+    <div class="mp" style="grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)">
+      <div class="cell" style="background:transparent;border-color:transparent"></div><div class="cell" style="background:var(--green)"></div><div class="cell" style="background:var(--green)"></div>
+      <div class="cell" style="background:var(--green)"></div><div class="cell" style="background:var(--green)"></div><div class="cell" style="background:transparent;border-color:transparent"></div>
+    </div>
+    <div class="mp" style="grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)">
+      <div class="cell" style="background:var(--orange)"></div><div class="cell" style="background:transparent;border-color:transparent"></div><div class="cell" style="background:transparent;border-color:transparent"></div>
+      <div class="cell" style="background:var(--orange)"></div><div class="cell" style="background:var(--orange)"></div><div class="cell" style="background:var(--orange)"></div>
+    </div>
+  </div>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">VIEW PROJECTS</a>
+    <a href="#contact" class="btn btn-secondary">GET IN TOUCH</a>
+  </div>
+  <p style="font-family:var(--fp);font-size:.3rem;color:var(--dim);letter-spacing:2px;margin-top:1.2rem">↑↑↓↓←→←→BA — SECRET GAME INSIDE</p>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">01</div>
+      <h2 class="section-title">ABOUT.EXE</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-game-wrap fade-in">
+        <!-- Game switcher -->
+        <div class="game-btns" style="margin-bottom:.4rem">
+          <button class="game-btn active" id="btn-tetris" onclick="switchGame('tetris')">TETRIS</button>
+          <button class="game-btn" id="btn-flappy" onclick="switchGame('flappy')">FLAPPY</button>
+        </div>
+
+        <!-- TETRIS -->
+        <div id="tetris-wrap" class="about-game-ui">
+          <div class="aside">
+            <div>SCORE<br><span class="val" id="ab-score">0</span></div>
+            <div style="margin-top:.7rem">LINES<br><span class="val" id="ab-lines">0</span></div>
+            <div style="margin-top:.7rem">LEVEL<br><span class="val" id="ab-level">1</span></div>
+            <div style="margin-top:1rem;color:var(--dim);font-size:.25rem;line-height:2.8">← → MOVE<br>↑ ROTATE<br>↓ SOFT<br>SPC HARD<br>C HOLD<br>P PAUSE<br>R RESET</div>
+          </div>
+          <canvas id="about-canvas" width="200" height="400" tabindex="0" style="border:3px solid var(--cyan);box-shadow:0 0 18px rgba(0,240,240,.28),4px 4px 0 var(--dim);display:block;outline:none"></canvas>
+          <div class="aside">
+            <div class="ml">NEXT</div>
+            <canvas id="about-next" width="76" height="76" style="border:1px solid var(--dim);display:block;margin-top:3px"></canvas>
+            <div style="margin-top:.9rem" class="ml">HOLD</div>
+            <canvas id="about-hold" width="76" height="76" style="border:1px solid var(--dim);display:block;margin-top:3px"></canvas>
+          </div>
+        </div>
+
+        <!-- FLAPPY -->
+        <div id="flappy-wrap" style="display:none" class="about-game-ui">
+          <div class="aside">
+            <div>SCORE<br><span class="val" id="fl-score">0</span></div>
+            <div style="margin-top:.7rem">BEST<br><span class="val" id="fl-best">0</span></div>
+            <div style="margin-top:1rem;color:var(--dim);font-size:.25rem;line-height:2.8">SPC/CLICK<br>FLAP<br><br>R RESET</div>
+          </div>
+          <canvas id="flappy-canvas" width="200" height="400" tabindex="0" style="outline:none"></canvas>
+          <div class="aside" style="font-size:.26rem;color:var(--dim);line-height:2">
+            <div style="color:var(--green);font-size:.32rem;margin-bottom:.4rem">HOW TO</div>
+            Avoid the<br>pipes.<br><br>Hit SPACE<br>or CLICK<br>to flap.<br><br>Don't fall!
+          </div>
+        </div>
+
+        <p class="abl" style="margin-top:.3rem">CLICK GAME → FOCUS → PLAY</p>
+      </div>
+
+      <div class="about-text fade-in">
+        <p>Hey! I'm <span class="hl">Arnav</span>, a Cloud &amp; DevOps engineer based in <span class="hl">Noida</span>.</p>
+        <p>I love architecting resilient systems — spinning up infra, automating pipelines, and making deployments blissfully boring.</p>
+        <p>I also dive deep into <span class="hl">AI/ML</span> — training models and deploying them at scale. I'm the person who makes sure the model actually runs in production.</p>
+        <p>When I'm not taming cloud configs, I'm clearly building Tetris and Flappy Bird into my portfolio. 👆</p>
+        <div class="stat-row">
+          <div class="stat-box"><span class="stat-num">1.5+</span><span class="stat-label">YRS EXP</span></div>
+          <div class="stat-box"><span class="stat-num">4</span><span class="stat-label">PROJECTS</span></div>
+          <div class="stat-box"><span class="stat-num">∞</span><span class="stat-label">COFFEE</span></div>
+        <a href="tel:+918445645909" class="cli"><span class="clii">📞</span>CALL</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">02</div>
+      <h2 class="section-title">SKILLS.DAT</h2>
+    </div>
+    <div class="skills-board">
+      <div class="skill-panel sp-c fade-in">
+        <div class="spt">// CLOUD</div>
+        <div class="ski"><div class="snr"><span class="sn">AWS</span><span class="sp">88%</span></div><div class="sb"><div class="sf" data-w="88"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Linux / System Design</span><span class="sp">85%</span></div><div class="sb"><div class="sf" data-w="85"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Networking (TCP/IP, DNS)</span><span class="sp">80%</span></div><div class="sb"><div class="sf" data-w="80"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Terraform / IaC</span><span class="sp">82%</span></div><div class="sb"><div class="sf" data-w="82"></div></div></div>
+      </div>
+      <div class="skill-panel sp-p fade-in">
+        <div class="spt">// DEVOPS</div>
+        <div class="ski"><div class="snr"><span class="sn">Docker / Kubernetes</span><span class="sp">85%</span></div><div class="sb"><div class="sf" data-w="85"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">CI/CD (GitHub Actions)</span><span class="sp">88%</span></div><div class="sb"><div class="sf" data-w="88"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Linux / Bash</span><span class="sp">83%</span></div><div class="sb"><div class="sf" data-w="83"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Prometheus / Grafana</span><span class="sp">70%</span></div><div class="sb"><div class="sf" data-w="70"></div></div></div>
+      </div>
+      <div class="skill-panel sp-y fade-in">
+        <div class="spt">// AI / ML</div>
+        <div class="ski"><div class="snr"><span class="sn">Python</span><span class="sp">87%</span></div><div class="sb"><div class="sf" data-w="87"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">PyTorch / TensorFlow</span><span class="sp">78%</span></div><div class="sb"><div class="sf" data-w="78"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">MLOps / Model Deploy</span><span class="sp">75%</span></div><div class="sb"><div class="sf" data-w="75"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">OpenCV / Image Proc.</span><span class="sp">72%</span></div><div class="sb"><div class="sf" data-w="72"></div></div></div>
+      </div>
+      <div class="skill-panel sp-g fade-in">
+        <div class="spt">// TOOLS</div>
+        <div class="ski"><div class="snr"><span class="sn">Git / GitHub</span><span class="sp">93%</span></div><div class="sb"><div class="sf" data-w="93"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Node.js / React</span><span class="sp">58%</span></div><div class="sb"><div class="sf" data-w="58"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">PostgreSQL / SQLite</span><span class="sp">70%</span></div><div class="sb"><div class="sf" data-w="70"></div></div></div>
+        <div class="ski"><div class="snr"><span class="sn">Networking / Security</span><span class="sp">74%</span></div><div class="sb"><div class="sf" data-w="74"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">03</div>
+      <h2 class="section-title">PROJECTS.LOG</h2>
+    </div>
+    <div class="projects-grid">
+
+      <!-- NimbusDrive -->
+      <div class="project-card fade-in" onclick="addScore(500);showToast('+500 PTS!');window.open('https://nimbusdrive.onrender.com/', '_blank')">
+        <div class="pch" style="background:rgba(0,240,240,.07)">
+          <div>
+            <a href="https://nimbusdrive.onrender.com/" target="_blank" class="pct" style="text-decoration:none" >NIMBUSDRIVE</a>
+            <div class="pcst">AI-POWERED CLOUD STORAGE</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,9px);gap:2px">
+            <div style="background:var(--cyan)"></div><div style="background:var(--cyan)"></div><div style="background:var(--cyan)"></div><div style="background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="pcb">
+          <p class="pdesc">Full-stack cloud storage with AI-powered semantic search — upload a PDF and search by its <em>content</em>, not just the filename. LLaMA 3.1 reads inside your files.</p>
+          <div class="ptags">
+            <span class="tag ty">FastAPI</span><span class="tag ty">Python</span><span class="tag tc">AWS S3</span><span class="tag to">Groq + LLaMA 3.1</span><span class="tag tg">SQLite</span><span class="tag tp">JWT Auth</span><span class="tag tr">Render</span>
+          </div>
+          <div style="font-family:var(--fp);font-size:.27rem;color:var(--dim);margin-bottom:.8rem;line-height:2.2">
+            ✦ AI content search (PDF, DOCX, TXT)<br>
+            ✦ Upload / download / delete via S3<br>
+            ✦ JWT auth — per-user file isolation<br>
+            ✦ Dashboard with storage analytics<br>
+            ✦ Dark / light mode
+          </div>
+          <div class="plinks">
+            <a href="https://github.com/ArnavBhatt30" target="_blank" class="pl">&#60;/&#62; CODE</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAR Colorization -->
+      <div class="project-card fade-in" onclick="addScore(500);showToast('+500 PTS!');window.open('https://www.linkedin.com/feed/update/urn:li:activity:7319741723755048961/', '_blank')">
+        <div class="pch" style="background:rgba(240,240,0,.05)">
+          <div>
+            <a href="https://cultivai-final-deployment-part2-qpy.vercel.app/login" target="_blank" class="pct" style="text-decoration:none" >SAR COLORIZATION</a>
+            <div class="pcst">AI / ML · SATELLITE IMAGING</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,9px);grid-template-rows:repeat(2,9px);gap:2px">
+            <div style="background:var(--yellow)"></div><div style="background:var(--yellow)"></div><div style="background:var(--yellow)"></div><div style="background:var(--yellow)"></div>
+          </div>
+        </div>
+        <div class="pcb">
+          <p class="pdesc">Colorizing grayscale Synthetic Aperture Radar satellite imagery using deep learning — making raw radar data visually interpretable for analysts and researchers.</p>
+          <div class="ptags">
+            <span class="tag ty">Python</span><span class="tag ty">PyTorch</span><span class="tag tc">OpenCV</span><span class="tag tp">Deep Learning</span><span class="tag tg">GAN</span>
+          </div>
+          <div class="plinks">
+            <a href="https://github.com/ArnavBhatt30" target="_blank" class="pl">&#60;/&#62; CODE</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CultivAI -->
+      <div class="project-card fade-in" onclick="addScore(500);showToast('+500 PTS!');window.open('https://cultivai-final-deployment-part2-qpy.vercel.app/login', '_blank')">
+        <div class="pch" style="background:rgba(0,240,0,.04)">
+          <div>
+            <a href="https://www.linkedin.com/feed/update/urn:li:activity:7319741723755048961/" target="_blank" class="pct" style="text-decoration:none" >CULTIVAI</a>
+            <div class="pcst">AI / CLOUD · AGRITECH</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,9px);grid-template-rows:repeat(2,9px);gap:2px">
+            <div style="background:transparent"></div><div style="background:var(--green)"></div><div style="background:var(--green)"></div>
+            <div style="background:var(--green)"></div><div style="background:var(--green)"></div><div style="background:transparent"></div>
+          </div>
+        </div>
+        <div class="pcb">
+          <p class="pdesc">AI-powered precision agriculture — ML models analyze soil health, predict crop yields and recommend actions, all deployed and auto-scaled on the cloud.</p>
+          <div class="ptags">
+            <span class="tag tg">Python</span><span class="tag ty">TensorFlow</span><span class="tag tc">GCP</span><span class="tag tp">FastAPI</span><span class="tag to">Kubernetes</span>
+          </div>
+          <div class="plinks">
+            <a href="https://github.com/ArnavBhatt30" target="_blank" class="pl">&#60;/&#62; CODE</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p style="font-family:var(--fp);font-size:.34rem;color:var(--dim);letter-spacing:1px;margin-top:1.8rem;text-align:center">
+      + MORE ON <a href="https://github.com/ArnavBhatt30" target="_blank" style="color:var(--cyan);text-decoration:none">GITHUB ↗</a>
+    </p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="section-tag">04</div>
+      <h2 class="section-title">CONTACT.INI</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-form fade-in">
+        <div class="fg"><label>NAME_INPUT:</label><input type="text" placeholder="Your name..."/></div>
+        <div class="fg"><label>EMAIL_INPUT:</label><input type="email" placeholder="your@email.com"/></div>
+        <div class="fg"><label>MSG_INPUT:</label><textarea placeholder="Got a cloud project? Want to collab? Let's talk..."></textarea></div>
+        <button class="btn btn-primary" style="width:100%;padding:13px" onclick="addScore(200);showToast('MESSAGE SENT! +200 PTS')">SEND MESSAGE ↗</button>
+      </div>
+      <div class="fade-in">
+        <p class="cit">Got a project that needs cloud muscle, a DevOps pipeline, or some AI sprinkled in? Drop me a line!</p>
+        <div class="cl">
+          <a href="mailto:arnavb623@gmail.com" class="cli"><span class="clii">@</span>arnavb623@gmail.com</a>
+          <a href="https://github.com/ArnavBhatt30" target="_blank" class="cli"><span class="clii">GH</span>github.com/ArnavBhatt30</a>
+          <a href="https://www.linkedin.com/in/arnav-bhatt-0139b8172/" target="_blank" class="cli"><span class="clii">IN</span>linkedin.com/in/arnav-bhatt</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&#169; 2026 ARNAV BHATT — MADE WITH <span>&#9829;</span> AND TOO MUCH COFFEE</p>
+  <p>↑↑↓↓←→←→BA FOR A SURPRISE</p>
+</footer>
+
+<!-- KONAMI TETRIS OVERLAY -->
+<div class="overlay" id="konami-overlay">
+  <button class="ov-close" onclick="closeKonami()">&#215; CLOSE</button>
+  <div class="ov-title">★ EASTER EGG UNLOCKED ★</div>
+  <div class="k-ui">
+    <div class="k-side">
+      <div>SCORE<br><span class="val" id="k-score">0</span></div>
+      <div style="margin-top:.7rem">LINES<br><span class="val" id="k-lines">0</span></div>
+      <div style="margin-top:.7rem">LEVEL<br><span class="val" id="k-level">1</span></div>
+      <div class="hints">← → MOVE<br>↑ ROTATE<br>↓ DROP<br>SPC HARD<br>C HOLD<br>R RESET</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:.6rem">
+      <canvas id="konami-canvas" width="240" height="480"></canvas>
+      <button class="ov-reset-btn" onclick="resetKonami()">R — RESET</button>
+    </div>
+    <div class="k-side">
+      <div>NEXT</div><canvas id="k-next" width="80" height="80" style="margin-top:5px;border:1px solid var(--dim)"></canvas>
+      <div style="margin-top:.9rem">HOLD</div><canvas id="k-hold" width="80" height="80" style="margin-top:5px;border:1px solid var(--dim)"></canvas>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// AUDIO ENGINE — Web Audio API, no files needed
+// ============================================================
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+
+function resumeAC(){if(AC.state==='suspended')AC.resume()}
+
+function beep(freq,dur,type='square',vol=.18,detune=0){
+  resumeAC();
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(AC.destination);
+  o.type=type;o.frequency.value=freq;o.detune.value=detune;
+  g.gain.setValueAtTime(vol,AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+dur);
+  o.start(AC.currentTime);o.stop(AC.currentTime+dur);
+}
+
+const SFX={
+  move:()=>beep(220,.04,'square',.1),
+  rotate:()=>beep(330,.06,'square',.12),
+  softDrop:()=>beep(180,.03,'square',.08),
+  hardDrop:()=>{beep(120,.05,'square',.15);beep(90,.08,'square',.12,.5)},
+  lock:()=>beep(150,.12,'square',.14),
+  lineClear:(n)=>{
+    const freqs=[[440],[440,523],[440,523,659],[440,523,659,880]][n-1]||[440];
+    freqs.forEach((f,i)=>setTimeout(()=>beep(f,.15,'square',.2),i*60));
+  },
+  tetris:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.18,'square',.22),i*80))},
+  gameOver:()=>{[400,350,300,250,200].forEach((f,i)=>setTimeout(()=>beep(f,.15,'sawtooth',.15),i*100))},
+  flap:()=>beep(440,.08,'sine',.15),
+  score:()=>beep(660,.1,'sine',.15),
+  flappyDie:()=>{beep(300,.1,'sawtooth',.2);setTimeout(()=>beep(200,.2,'sawtooth',.2),100)},
+  konami:()=>{const m=[523,523,523,698,523,622,466];m.forEach((f,i)=>setTimeout(()=>beep(f,.18,'square',.18),i*120))},
+  click:()=>beep(600,.05,'square',.08),
+};
+
+// ============================================================
+// GLOBALS
+// ============================================================
+const $=id=>document.getElementById(id);
+let globalScore=0;
+function addScore(n){globalScore+=n;$('score').textContent=String(globalScore).padStart(6,'0')}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
+
+// Typed
+const words=['build cloud infra.','automate pipelines.','deploy ML models.','clear lines.','make devops boring.'];
+let wi=0,ci=0,del=false;
+function typeEffect(){const el=$('typed'),w=words[wi];if(!del){el.textContent=w.slice(0,++ci);if(ci===w.length){del=true;setTimeout(typeEffect,1900);return}setTimeout(typeEffect,78)}else{el.textContent=w.slice(0,--ci);if(ci===0){del=false;wi=(wi+1)%words.length;setTimeout(typeEffect,400);return}setTimeout(typeEffect,42)}}
+typeEffect();
+
+// BG pieces
+(()=>{
+  const cv=$('tetris-bg'),ctx=cv.getContext('2d');
+  const CL=['#00f0f0','#f0f000','#a000f0','#00f000','#f00000','#0000f0','#f0a000'];
+  const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]]];
+  let pieces=[];const SZ=20;
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  function spawn(){const si=Math.floor(Math.random()*SH.length);const s=SH[si];pieces.push({x:Math.random()*(cv.width-s[0].length*SZ),y:-s.length*SZ,s,color:CL[si],sp:.4+Math.random()*1.4,rot:Math.random()*Math.PI*2,rs:(Math.random()-.5)*.02})}
+  let f=0;
+  (function loop(){ctx.clearRect(0,0,cv.width,cv.height);f++;if(f%65===0&&pieces.length<18)spawn();pieces=pieces.filter(p=>p.y<cv.height+200);for(const p of pieces){p.y+=p.sp;p.rot+=p.rs;ctx.save();ctx.translate(p.x+p.s[0].length*SZ/2,p.y+p.s.length*SZ/2);ctx.rotate(p.rot);ctx.translate(-p.s[0].length*SZ/2,-p.s.length*SZ/2);ctx.fillStyle=p.color;for(let r=0;r<p.s.length;r++)for(let c=0;c<p.s[r].length;c++)if(p.s[r][c])ctx.fillRect(c*SZ,r*SZ,SZ-1,SZ-1);ctx.restore()}requestAnimationFrame(loop)})();
+  for(let i=0;i<7;i++){spawn();pieces[pieces.length-1].y=Math.random()*window.innerHeight}
+})();
+
+// ============================================================
+// TETRIS ENGINE
+// ============================================================
+class Tetris{
+  constructor(cv,ncv,hcv,sEl,lEl,lvEl,sz=20){
+    this.cv=cv;this.ctx=cv.getContext('2d');
+    this.ncv=ncv;this.nctx=ncv&&ncv.getContext('2d');
+    this.hcv=hcv;this.hctx=hcv&&hcv.getContext('2d');
+    this.sEl=sEl;this.lEl=lEl;this.lvEl=lvEl;
+    this.SZ=sz;this.W=Math.floor(cv.width/sz);this.H=Math.floor(cv.height/sz);
+    this.C=['','#00f0f0','#f0f000','#a000f0','#00f000','#f00000','#0000f0','#f0a000'];
+    this.SH=[null,
+      [[[1,1,1,1]],[[1],[1],[1],[1]]],
+      [[[1,1],[1,1]]],
+      [[[0,1,0],[1,1,1]],[[1,0],[1,1],[1,0]],[[1,1,1],[0,1,0]],[[0,1],[1,1],[0,1]]],
+      [[[0,1,1],[1,1,0]],[[1,0],[1,1],[0,1]]],
+      [[[1,1,0],[0,1,1]],[[0,1],[1,1],[1,0]]],
+      [[[1,0,0],[1,1,1]],[[1,1],[1,0],[1,0]],[[1,1,1],[0,0,1]],[[0,1],[0,1],[1,1]]],
+      [[[0,0,1],[1,1,1]],[[1,0],[1,0],[1,1]],[[1,1,1],[1,0,0]],[[1,1],[0,1],[0,1]]]
+    ];
+    this.running=false;this.paused=false;this._raf=null;
+    this.reset();
+  }
+  reset(){
+    this.board=Array.from({length:this.H},()=>Array(this.W).fill(0));
+    this.score=0;this.lines=0;this.level=1;this.di=800;
+    this.holdType=null;this.holdUsed=false;
+    this.nextType=this._r();this._spawn(this._r());this._ui();
+  }
+  _r(){return Math.floor(Math.random()*7)+1}
+  _spawn(t){
+    this.ct=t;this.cr=0;this.cs=this.SH[t][0].map(r=>[...r]);
+    this.cx=Math.floor((this.W-this.cs[0].length)/2);this.cy=0;
+    if(!this._f(this.cs,this.cx,this.cy)){SFX.gameOver();this.reset()}
+  }
+  _f(s,x,y){for(let r=0;r<s.length;r++)for(let c=0;c<s[r].length;c++)if(s[r][c]){const nx=x+c,ny=y+r;if(nx<0||nx>=this.W||ny>=this.H)return false;if(ny>=0&&this.board[ny][nx])return false}return true}
+  _lock(){
+    for(let r=0;r<this.cs.length;r++)for(let c=0;c<this.cs[r].length;c++)if(this.cs[r][c])this.board[this.cy+r][this.cx+c]=this.ct;
+    SFX.lock();
+    let cl=0;for(let r=this.H-1;r>=0;r--)if(this.board[r].every(c=>c)){this.board.splice(r,1);this.board.unshift(Array(this.W).fill(0));cl++;r++}
+    if(cl){
+      const pts=[0,100,300,500,800][cl]*this.level;
+      this.score+=pts;this.lines+=cl;this.level=Math.floor(this.lines/10)+1;this.di=Math.max(80,800-this.level*70);
+      addScore(pts);
+      cl===4?SFX.tetris():SFX.lineClear(cl);
+    }
+    this.holdUsed=false;this._spawn(this.nextType);this.nextType=this._r();this._ui();
+  }
+  hold(){if(this.holdUsed)return;if(!this.holdType){this.holdType=this.ct;this._spawn(this.nextType);this.nextType=this._r()}else{const t=this.holdType;this.holdType=this.ct;this._spawn(t)}this.holdUsed=true;this._ui()}
+  left(){if(this._f(this.cs,this.cx-1,this.cy)){this.cx--;SFX.move()}}
+  right(){if(this._f(this.cs,this.cx+1,this.cy)){this.cx++;SFX.move()}}
+  soft(){if(this._f(this.cs,this.cx,this.cy+1)){this.cy++;SFX.softDrop()}else this._lock()}
+  hard(){while(this._f(this.cs,this.cx,this.cy+1))this.cy++;SFX.hardDrop();this._lock()}
+  rot(){
+    const rots=this.SH[this.ct];const nr=(this.cr+1)%rots.length;const ns=rots[nr].map(r=>[...r]);
+    for(const k of[0,-1,1,-2,2])if(this._f(ns,this.cx+k,this.cy)){this.cx+=k;this.cr=nr;this.cs=ns;SFX.rotate();return}
+  }
+  _gy(){let g=this.cy;while(this._f(this.cs,this.cx,g+1))g++;return g}
+  _ui(){if(this.sEl)this.sEl.textContent=this.score;if(this.lEl)this.lEl.textContent=this.lines;if(this.lvEl)this.lvEl.textContent=this.level}
+  _dp(ctx,s,t,ox,oy,sz,a=1){
+    ctx.globalAlpha=a;ctx.fillStyle=this.C[t];
+    for(let r=0;r<s.length;r++)for(let c=0;c<s[r].length;c++)if(s[r][c]){ctx.fillRect(ox+c*sz+1,oy+r*sz+1,sz-2,sz-2);ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=1;ctx.strokeRect(ox+c*sz+1,oy+r*sz+1,sz-2,sz-2)}
+    ctx.globalAlpha=1;
+  }
+  _mini(ctx,cv,t){
+    ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,cv.width,cv.height);
+    if(!t)return;const s=this.SH[t][0];const sz=14;
+    const ox=Math.floor((cv.width-s[0].length*sz)/2),oy=Math.floor((cv.height-s.length*sz)/2);
+    this._dp(ctx,s,t,ox,oy,sz);
+  }
+  draw(){
+    const ctx=this.ctx,SZ=this.SZ;
+    ctx.fillStyle='#0a0a0f';ctx.fillRect(0,0,this.cv.width,this.cv.height);
+    ctx.strokeStyle='#111118';ctx.lineWidth=.5;
+    for(let r=0;r<this.H;r++)for(let c=0;c<this.W;c++){ctx.strokeRect(c*SZ,r*SZ,SZ,SZ);if(this.board[r][c]){ctx.fillStyle=this.C[this.board[r][c]];ctx.fillRect(c*SZ+1,r*SZ+1,SZ-2,SZ-2)}}
+    const gy=this._gy();this._dp(ctx,this.cs,this.ct,this.cx*SZ,gy*SZ,SZ,.17);
+    this._dp(ctx,this.cs,this.ct,this.cx*SZ,this.cy*SZ,SZ);
+    if(this.paused){ctx.fillStyle='rgba(10,10,15,.82)';ctx.fillRect(0,0,this.cv.width,this.cv.height);ctx.fillStyle='#f0f000';ctx.font="bold 11px 'Press Start 2P'";ctx.textAlign='center';ctx.fillText('PAUSED',this.cv.width/2,this.cv.height/2)}
+    if(this.nctx)this._mini(this.nctx,this.ncv,this.nextType);
+    if(this.hctx)this._mini(this.hctx,this.hcv,this.holdType);
+  }
+  start(){
+    this.running=true;let last=performance.now();
+    const loop=(ts)=>{
+      if(!this.running)return;
+      if(!this.paused&&ts-last>this.di){if(this._f(this.cs,this.cx,this.cy+1))this.cy++;else this._lock();last=ts}
+      this.draw();this._raf=requestAnimationFrame(loop);
+    };
+    this._raf=requestAnimationFrame(loop);
+  }
+  stop(){this.running=false;if(this._raf)cancelAnimationFrame(this._raf)}
+  togglePause(){this.paused=!this.paused}
+}
+
+// ============================================================
+// FLAPPY BIRD ENGINE
+// ============================================================
+class Flappy{
+  constructor(cv,sEl,bEl){
+    this.cv=cv;this.ctx=cv.getContext('2d');
+    this.W=cv.width;this.H=cv.height;
+    this.sEl=sEl;this.bEl=bEl;
+    this.best=0;this.state='idle'; // idle | playing | dead
+    this.reset();
+  }
+  reset(){
+    this.bird={x:50,y:this.H/2,vy:0,r:10};
+    this.pipes=[];this.score=0;this.frame=0;
+    this.gravity=0.32;this.flapPow=-6.2;this.pipeGap=90;this.pipeW=28;this.pipeSpeed=1.8;
+    if(this.sEl)this.sEl.textContent=0;
+    if(this.state==='dead')this.state='idle';
+    this._raf&&cancelAnimationFrame(this._raf);
+    this._loop();
+  }
+  flap(){
+    resumeAC();
+    if(this.state==='idle'){this.state='playing';this.bird.vy=this.flapPow;SFX.flap();return}
+    if(this.state==='playing'){this.bird.vy=this.flapPow;SFX.flap()}
+    if(this.state==='dead'){this.reset()}
+  }
+  _addPipe(){
+    const minH=40,maxH=this.H-this.pipeGap-minH;
+    const topH=minH+Math.random()*(maxH-minH);
+    this.pipes.push({x:this.W,topH,scored:false});
+  }
+  _collides(){
+    const b=this.bird;
+    if(b.y-b.r<0||b.y+b.r>this.H)return true;
+    for(const p of this.pipes){
+      if(b.x+b.r>p.x&&b.x-b.r<p.x+this.pipeW){
+        if(b.y-b.r<p.topH||b.y+b.r>p.topH+this.pipeGap)return true;
+      }
+    }
+    return false;
+  }
+  _loop(){
+    this._raf=requestAnimationFrame(()=>{this.draw();if(this.running!==false)this._loop()});
+  }
+  update(){
+    if(this.state!=='playing')return;
+    this.frame++;
+    this.bird.vy+=this.gravity;
+    this.bird.y+=this.bird.vy;
+    if(this.frame%80===0)this._addPipe();
+    this.pipes=this.pipes.filter(p=>p.x+this.pipeW>0);
+    for(const p of this.pipes){
+      p.x-=this.pipeSpeed;
+      if(!p.scored&&p.x+this.pipeW<this.bird.x){p.scored=true;this.score++;addScore(50);SFX.score();if(this.sEl)this.sEl.textContent=this.score}
+    }
+    if(this._collides()){
+      this.state='dead';SFX.flappyDie();
+      if(this.score>this.best){this.best=this.score;if(this.bEl)this.bEl.textContent=this.best}
+    }
+  }
+  draw(){
+    this.update();
+    const ctx=this.ctx,W=this.W,H=this.H;
+    // BG
+    ctx.fillStyle='#0a0f0a';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='#111811';ctx.lineWidth=.5;
+    for(let r=0;r<H;r+=20)for(let c=0;c<W;c+=20)ctx.strokeRect(c,r,20,20);
+    // Ground line
+    ctx.strokeStyle='#00f000';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H-2);ctx.lineTo(W,H-2);ctx.stroke();
+    // Pipes
+    for(const p of this.pipes){
+      ctx.fillStyle='#00f000';
+      ctx.fillRect(p.x,0,this.pipeW,p.topH);
+      ctx.fillRect(p.x,p.topH+this.pipeGap,this.pipeW,H-p.topH-this.pipeGap);
+      // pipe caps
+      ctx.fillStyle='#00c800';
+      ctx.fillRect(p.x-3,p.topH-8,this.pipeW+6,8);
+      ctx.fillRect(p.x-3,p.topH+this.pipeGap,this.pipeW+6,8);
+    }
+    // Bird
+    const b=this.bird;
+    const angle=Math.min(Math.max(b.vy*0.05,-0.5),0.8);
+    ctx.save();ctx.translate(b.x,b.y);ctx.rotate(angle);
+    ctx.fillStyle='#f0f000';ctx.beginPath();ctx.arc(0,0,b.r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#c8c800';ctx.lineWidth=1.5;ctx.stroke();
+    // eye
+    ctx.fillStyle='#0a0a0f';ctx.beginPath();ctx.arc(4,-3,2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(4.5,-3.5,1,0,Math.PI*2);ctx.fill();
+    // beak
+    ctx.fillStyle='#f0a000';ctx.beginPath();ctx.moveTo(b.r-2,0);ctx.lineTo(b.r+6,-2);ctx.lineTo(b.r+6,2);ctx.closePath();ctx.fill();
+    ctx.restore();
+    // Score
+    ctx.fillStyle='#f0f000';ctx.font="bold 9px 'Press Start 2P'";ctx.textAlign='center';
+    if(this.state==='playing'||this.state==='dead')ctx.fillText(this.score,W/2,24);
+    // Overlays
+    if(this.state==='idle'){
+      ctx.fillStyle='rgba(10,10,15,.6)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#00f000';ctx.font="bold 8px 'Press Start 2P'";ctx.textAlign='center';
+      ctx.fillText('FLAPPY BIRD',W/2,H/2-24);
+      ctx.fillStyle='#f0f000';ctx.font="6px 'Press Start 2P'";
+      ctx.fillText('SPACE / CLICK',W/2,H/2);
+      ctx.fillText('TO START',W/2,H/2+18);
+    }
+    if(this.state==='dead'){
+      ctx.fillStyle='rgba(10,10,15,.72)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#f00000';ctx.font="bold 8px 'Press Start 2P'";ctx.textAlign='center';
+      ctx.fillText('GAME OVER',W/2,H/2-30);
+      ctx.fillStyle='#f0f000';ctx.font="6px 'Press Start 2P'";
+      ctx.fillText('SCORE: '+this.score,W/2,H/2-8);
+      ctx.fillText('BEST:  '+this.best,W/2,H/2+10);
+      ctx.fillStyle='#00f0f0';ctx.fillText('SPACE TO RETRY',W/2,H/2+32);
+    }
+  }
+}
+
+// ============================================================
+// ABOUT — GAME INSTANCES
+// ============================================================
+let aboutTetris=null,aboutFlappy=null,activeGame='tetris';
+
+function initAboutTetris(){
+  if(aboutTetris)return;
+  aboutTetris=new Tetris($('about-canvas'),$('about-next'),$('about-hold'),$('ab-score'),$('ab-lines'),$('ab-level'),20);
+  aboutTetris.start();
+  const cv=$('about-canvas');
+  cv.addEventListener('keydown',e=>{
+    if(!aboutTetris||!aboutTetris.running)return;
+    if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault();
+    if(e.key==='ArrowLeft')aboutTetris.left();
+    if(e.key==='ArrowRight')aboutTetris.right();
+    if(e.key==='ArrowDown')aboutTetris.soft();
+    if(e.key==='ArrowUp')aboutTetris.rot();
+    if(e.key===' ')aboutTetris.hard();
+    if(e.key==='p'||e.key==='P')aboutTetris.togglePause();
+    if(e.key==='c'||e.key==='C')aboutTetris.hold();
+    if(e.key==='r'||e.key==='R'){aboutTetris.reset();showToast('TETRIS RESET!')}
+  });
+  cv.addEventListener('click',()=>cv.focus());
+}
+
+function initAboutFlappy(){
+  if(aboutFlappy)return;
+  aboutFlappy=new Flappy($('flappy-canvas'),$('fl-score'),$('fl-best'));
+  const cv=$('flappy-canvas');
+  cv.addEventListener('keydown',e=>{
+    if(e.key===' '){e.preventDefault();aboutFlappy.flap()}
+    if(e.key==='r'||e.key==='R'){aboutFlappy.reset();showToast('FLAPPY RESET!')}
+  });
+  cv.addEventListener('click',()=>{cv.focus();aboutFlappy.flap()});
+}
+
+function switchGame(g){
+  resumeAC();SFX.click();
+  activeGame=g;
+  $('tetris-wrap').style.display=g==='tetris'?'flex':'none';
+  $('flappy-wrap').style.display=g==='flappy'?'flex':'none';
+  $('btn-tetris').classList.toggle('active',g==='tetris');
+  $('btn-flappy').classList.toggle('active',g==='flappy');
+  if(g==='tetris'){initAboutTetris();setTimeout(()=>$('about-canvas').focus(),50)}
+  if(g==='flappy'){initAboutFlappy();setTimeout(()=>$('flappy-canvas').focus(),50)}
+}
+
+// ============================================================
+// SCROLL OBSERVER
+// ============================================================
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){
+    e.target.classList.add('visible');
+    e.target.querySelectorAll('.sf').forEach(f=>f.style.width=f.dataset.w+'%');
+    if(e.target.closest('#about'))initAboutTetris();
+  }
+}),{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+setTimeout(()=>{if(!aboutTetris&&$('about-canvas').getBoundingClientRect().top<window.innerHeight)initAboutTetris()},500);
+
+// ============================================================
+// CURSOR TRAIL
+// ============================================================
+const TC=['#00f0f0','#f0f000','#a000f0','#00f000','#f0a000'];let ti=0;
+document.addEventListener('mousemove',e=>{
+  const b=document.createElement('div');b.className='cursor-block';
+  b.style.left=e.clientX-4+'px';b.style.top=e.clientY-4+'px';
+  b.style.background=TC[ti++%TC.length];
+  document.body.appendChild(b);setTimeout(()=>b.remove(),600);
+});
+
+// ============================================================
+// KONAMI CODE
+// ============================================================
+const KK=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let ki=0,konamiGame=null;
+document.addEventListener('keydown',e=>{
+  if(e.key===KK[ki]){ki++;if(ki===KK.length){ki=0;addScore(10000);showToast('★ KONAMI! +10000 PTS ★');SFX.konami();setTimeout(openKonami,600)}}else ki=0;
+});
+
+function openKonami(){
+  $('konami-overlay').classList.add('active');
+  if(konamiGame)konamiGame.stop();
+  konamiGame=new Tetris($('konami-canvas'),$('k-next'),$('k-hold'),$('k-score'),$('k-lines'),$('k-level'),24);
+  konamiGame.start();
+  document.addEventListener('keydown',kH);
+}
+function closeKonami(){$('konami-overlay').classList.remove('active');if(konamiGame){konamiGame.stop();konamiGame=null}document.removeEventListener('keydown',kH)}
+function resetKonami(){if(konamiGame){konamiGame.reset();showToast('KONAMI TETRIS RESET!')}}
+function kH(e){
+  if(!konamiGame||!$('konami-overlay').classList.contains('active'))return;
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault();
+  if(e.key==='ArrowLeft')konamiGame.left();
+  if(e.key==='ArrowRight')konamiGame.right();
+  if(e.key==='ArrowDown')konamiGame.soft();
+  if(e.key==='ArrowUp')konamiGame.rot();
+  if(e.key===' ')konamiGame.hard();
+  if(e.key==='c'||e.key==='C')konamiGame.hold();
+  if(e.key==='r'||e.key==='R')resetKonami();
+}
+
+// Score secret
+let sc=0;
+$('score-display').addEventListener('click',()=>{resumeAC();sc++;SFX.click();if(sc===5){showToast('CHEAT! +5000 PTS');addScore(5000);sc=0}else addScore(10)});
+</script>
+
+<script>
+// ===== SAFE FIXES (DO NOT BREAK ANYTHING) =====
+
+// Skill bars fix
+window.addEventListener("load", () => {
+  document.querySelectorAll('.sf').forEach(f => {
+    if (f.dataset.w) f.style.width = f.dataset.w + '%';
+  });
+});
+
+// Audio unlock (required by browsers)
+document.addEventListener("click", () => {
+  try {
+    if (window.AC && AC.state === "suspended") {
+      AC.resume();
+    }
+  } catch(e){}
+}, { once: true });
+
+// Ensure games initialize properly
+window.addEventListener("load", () => {
+  try {
+    if (typeof initAboutTetris === "function") initAboutTetris();
+    if (typeof initAboutFlappy === "function") initAboutFlappy();
+  } catch(e){
+    console.log("Init error:", e);
+  }
+});
+</script>
+
+</body>
+</html>
